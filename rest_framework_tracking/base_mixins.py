@@ -18,6 +18,9 @@ class BaseLoggingMixin(object):
 
     logging_methods = "__all__"
     sensitive_fields = {}
+    # respond value when not included. Prevents possible
+    # misunderstandings when there is actually no response
+    request_response = "Excluded by settings"
 
     def __init__(self, *args, **kwargs):
         assert isinstance(self.CLEANED_SUBSTITUTE, str), "CLEANED_SUBSTITUTE must be a string."
@@ -68,6 +71,10 @@ class BaseLoggingMixin(object):
             else:
                 rendered_content = response.getvalue()
 
+
+            if app_settings.INCLUDE_RESPONSE:
+                self.request_response = self._clean_data(rendered_content)
+
             user = self._get_user(request)
 
             self.log.update(
@@ -83,7 +90,7 @@ class BaseLoggingMixin(object):
                     "user": user,
                     "username_persistent": user.get_username() if user else "Anonymous",
                     "response_ms": self._get_response_ms(),
-                    "response": self._clean_data(rendered_content),
+                    "response": self.request_response,
                     "status_code": response.status_code,
                 }
             )

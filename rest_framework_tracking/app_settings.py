@@ -8,6 +8,11 @@ class AppSettings(object):
         return getattr(settings, self.prefix + name, dflt)
 
     @property
+    def INCLUDE_RESPONSE(self):
+        """Prevent Response from being logged - saving space in the database"""
+        return self._setting("INCLUDE_RESPONSE", True)
+
+    @property
     def ADMIN_LOG_READONLY(self):
         """Prevent log entries from being modified from Django admin."""
         return self._setting("ADMIN_LOG_READONLY", False)
